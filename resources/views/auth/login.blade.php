@@ -18,16 +18,16 @@
     .mobile-logo {
         width: 42px;
         height: 42px;
-        background: #15803D;
-        color: white;
-        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 20px;
-        box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
         flex-shrink: 0;
+    }
+
+    .mobile-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
 
     .mobile-brand-text h1 {
@@ -70,8 +70,8 @@
 <div class="auth-card">
     <!-- Left Banner (Overlay Transparan + Foto Gerbang SMKN 5 Terang) -->
     <div class="auth-banner" style="background: linear-gradient(135deg, rgba(21, 128, 61, 0.55) 0%, rgba(15, 81, 41, 0.75) 100%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px), url('{{ asset('img/smk5hd.jpg') }}') center center / cover no-repeat !important; background-size: cover, 20px 20px, cover !important;">
-        <div class="banner-brand">
-            <div class="banner-logo">D</div>
+       <div class="banner-brand">
+            <img class="banner-logo" src="{{ asset('img/logo/logo-mark-light.svg') }}" alt="DocuDemi" width="44" height="44">
             <div class="banner-title">
                 <h1 style="text-shadow: 0 2px 4px rgba(0,0,0,0.4);">DocuDemi</h1>
                 <p style="text-shadow: 0 1px 2px rgba(0,0,0,0.4);">SMKN 5 Surakarta</p>
@@ -107,7 +107,9 @@
     <div class="auth-form-container">
         <!-- Header Branding khusus Layar Mobile (HP) -->
         <div class="mobile-brand">
-            <div class="mobile-logo">D</div>
+            <div class="mobile-logo">
+                <img src="{{ asset('img/logo-mark.svg') }}" alt="Logo DocuDemi" style="width: 38px; height: 38px; object-fit: contain;">
+            </div>
             <div class="mobile-brand-text">
                 <h1>DocuDemi</h1>
                 <p>SMKN 5 Surakarta</p>

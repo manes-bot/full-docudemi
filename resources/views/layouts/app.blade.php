@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ asset('img/logo/favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo/apple-touch-icon.png') }}">
+    <meta name="theme-color" content="#15803D">
     <title>@yield('title', 'DocuDemi - Pelayanan Dokumen Akademik')</title>
     
     <!-- Google Font: Inter -->
@@ -87,14 +91,17 @@
         .brand-logo {
             width: 40px;
             height: 40px;
-            background-color: #FFFFFF;
-            color: var(--sidebar-bg);
-            border-radius: 10px;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 22px;
+            padding: 0;
+        }
+
+        .brand-logo img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
         }
 
         .brand-title {
@@ -272,7 +279,7 @@
         .card {
             background-color: var(--surface);
             border-radius: 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);logo
             padding: 24px;
             margin-bottom: 24px;
         }
@@ -310,7 +317,7 @@
     </style>
     @stack('styles')
 
-    <!-- DocuDemi UI layer: dimuat SETELAH @stack('styles') agar media query responsif menang atas style per-halaman -->
+    <!-- DocuDemi UI layer -->
     <link rel="stylesheet" href="{{ asset('css/docudemi-ui.css') }}">
 </head>
 <body class="{{ request()->routeIs('login', 'register') ? 'auth-page' : '' }}">
@@ -320,10 +327,11 @@
 
     <!-- Sidebar Left -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <div class="brand-logo">D</div>
-            <div class="brand-title">DocuDemi</div>
+       <div class="sidebar-brand">
+            <img class="brand-logo" src="{{ asset('img/logo/logo-mark-light.svg') }}" alt="DocuDemi" width="40" height="40">
+            <div class="brand-title">DocuDemi<small>SMKN 5 Surakarta</small></div>
         </div>
+
 
         <nav class="sidebar-menu">
             @if(Auth::check() && Auth::user()->role === 'alumni')
@@ -348,7 +356,7 @@
                 </a>
 
             @elseif(Auth::check() && Auth::user()->role === 'petugas')
-                <!-- Menu Petugas Kurikulum (Sesuai Figma) -->
+                <!-- Menu Petugas Kurikulum -->
                 <a href="{{ route('petugas.dashboard') }}" class="menu-item {{ request()->routeIs('petugas.dashboard') ? 'active' : '' }}">
                     <i data-lucide="layout-dashboard"></i> Dashboard
                 </a>

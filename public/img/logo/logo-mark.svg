@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="DocuDemi"><title>DocuDemi</title><g transform="translate(0 0) scale(1.0)">
+<rect width="64" height="64" rx="15" fill="#15803D"/>
+<path d="M19 10h19l10 10v25a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4z" fill="#FFFFFF"/>
+<path d="M38 10l10 10H40a2 2 0 0 1-2-2z" fill="#DCFCE7"/>
+<rect x="21" y="26" width="19" height="3.2" rx="1.6" fill="#15803D" opacity=".35"/>
+<rect x="21" y="33" width="14" height="3.2" rx="1.6" fill="#15803D" opacity=".35"/>
+<circle cx="45" cy="45" r="12.5" fill="#15803D"/>
+<circle cx="45" cy="45" r="10" fill="#C8281E"/>
+<path d="M40 45.3l3.7 3.7 6.6-7.4" fill="none" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</g></svg>

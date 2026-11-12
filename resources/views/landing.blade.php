@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocuDemi - Legalisir dan pengambilan ijazah alumni SMKN 5 Surakarta</title>
+    <link rel="icon" href="{{ asset('img/logo/favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo/apple-touch-icon.png') }}">
+    <meta name="theme-color" content="#15803D">
     <meta name="description" content="Ajukan legalisir ijazah atau transkrip dari rumah, pantau statusnya, dan datang ke sekolah hanya saat dokumen sudah siap diambil.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +53,7 @@
         .nav { position: sticky; top: 0; z-index: 20; background: rgba(246, 248, 247, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
         .nav .wrap { position: relative; display: flex; align-items: center; justify-content: space-between; height: 68px; }
         .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-        .brand-mark { width: 38px; height: 38px; border-radius: 9px; background: var(--green); color: var(--white); display: grid; place-items: center; font: 800 21px var(--display); }
+        .brand-mark { width: 38px; height: 38px; display: block; flex: none; }
         .brand-name { font: 700 20px var(--display); letter-spacing: -.02em; line-height: 1.1; }
         .brand-name small { display: block; font: 500 12px var(--body); letter-spacing: 0; color: var(--muted); }
         .nav-panel { display: flex; align-items: center; gap: 24px; }
@@ -203,7 +207,7 @@
     <header class="nav">
         <div class="wrap">
             <a href="{{ url('/') }}" class="brand" aria-label="DocuDemi, beranda">
-                <span class="brand-mark">D</span>
+                <img class="brand-mark" src="{{ asset('img/logo/logo-mark.svg') }}" alt="" width="38" height="38">
                 <span class="brand-name">DocuDemi <small>SMKN 5 Surakarta</small></span>
             </a>
             <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu" aria-label="Buka menu"><span class="bars"></span></button>
@@ -240,8 +244,7 @@
                 </div>
 
                 <div class="photo">
-                    <div class="kontak-photo">
-                    <img src="{{ asset('img/smk5hd.jpg') }}" alt="Papan nama SMK Negeri 5 Surakarta" width="800" height="503" loading="lazy">
+                    <img src="{{ asset('img/smk5hd-landing.jpg') }}" srcset="{{ asset('img/smk5hd-landing-800.jpg') }} 800w, {{ asset('img/smk5hd-landing.jpg') }} 1600w" sizes="(max-width: 900px) 100vw, 600px" alt="Gerbang SMK Negeri 5 Surakarta di Jl. Adi Sucipto" width="1600" height="1007" fetchpriority="high">
                     <div class="stamp" aria-hidden="true">
                         <svg viewBox="0 0 200 200" fill="none" stroke="currentColor">
                             <defs>
@@ -390,7 +393,7 @@
         <div class="wrap">
             <div class="foot-grid">
                 <div class="foot-brand">
-                    <a href="#beranda" class="brand"><span class="brand-mark">D</span><span class="brand-name">DocuDemi <small>SMKN 5 Surakarta</small></span></a>
+                    <a href="#beranda" class="brand"><img class="brand-mark" src="{{ asset('img/logo/logo-mark-light.svg') }}" alt="" width="38" height="38"><span class="brand-name">DocuDemi <small>SMKN 5 Surakarta</small></span></a>
                     <p>Sistem informasi dokumen dan legalisir alumni SMKN 5 Surakarta.</p>
                 </div>
                 <div>
