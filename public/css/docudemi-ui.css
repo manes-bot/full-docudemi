@@ -1,0 +1,974 @@
+/* ==========================================================================
+   DocuDemi UI Layer  —  responsive + motion + auth + table + modal fixes
+   --------------------------------------------------------------------------
+   File ini HANYA berisi styling. Tidak ada logic backend yang disentuh.
+   ========================================================================== */
+
+
+/* 1. DESIGN TOKENS ------------------------------------------------------- */
+:root {
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur: 0.3s;
+    --transition-base: all var(--dur) var(--ease);
+
+    --lift-y: -4px;                 /* tinggi hover lift-up card & tombol */
+    --press-scale: 0.98;            /* efek tekan */
+
+    --glow-ring: rgba(34, 197, 94, 0.16);
+    --glow-strong: rgba(34, 197, 94, 0.55);
+    --shadow-soft: 0 12px 28px -12px rgba(23, 43, 28, 0.22);
+    --shadow-glow: 0 0 0 4px var(--glow-ring), 0 14px 30px -14px rgba(21, 128, 61, 0.5);
+}
+
+
+/* 2. BASE & AKSESIBILITAS ------------------------------------------------ */
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+img, svg, video { max-width: 100%; }
+
+.main-wrapper { min-width: 0; }
+.content-body { 
+    min-width: 0; 
+    position: relative;
+    z-index: 1;
+}
+
+:focus-visible {
+    outline: 3px solid var(--glow-strong);
+    outline-offset: 2px;
+}
+
+.form-control:focus-visible { outline: none; }
+
+
+/* 3. KEYFRAMES ----------------------------------------------------------- */
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(40px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sheetUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.85) translateY(-6px); }
+    60%  { opacity: 1; transform: scale(1.04) translateY(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes stepPulse {
+    0%   { box-shadow: 0 0 0 0 var(--glow-strong), 0 0 14px 2px rgba(34, 197, 94, 0.35); }
+    70%  { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0), 0 0 14px 2px rgba(34, 197, 94, 0.35); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0), 0 0 14px 2px rgba(34, 197, 94, 0.35); }
+}
+
+@keyframes fillLineX {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes fillLineY {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+@keyframes selectGlow {
+    0%   { box-shadow: 0 0 0 0 var(--glow-strong); }
+    100% { box-shadow: 0 0 0 4px var(--glow-ring), 0 14px 30px -14px rgba(21, 128, 61, 0.5); }
+}
+
+@keyframes nudgeDown {
+    0%, 100% { transform: translateY(0); }
+    40%      { transform: translateY(3px); }
+    70%      { transform: translateY(-1px); }
+}
+
+.anim-fade-in   { animation: fadeIn 0.4s var(--ease) both; }
+.anim-pop-in    { animation: popIn 0.45s var(--ease-spring) both; }
+.anim-slide-up  { animation: slideUpFade 0.5s var(--ease) both; }
+.anim-delay-1   { animation-delay: 0.1s; }
+.anim-delay-2   { animation-delay: 0.2s; }
+.anim-delay-3   { animation-delay: 0.3s; }
+
+
+/* 4. CARD, BUTTON, FORM -------------------------------------------------- */
+.btn,
+.btn-logout,
+.menu-item,
+.card,
+.stat-card,
+.stat-card-figma,
+.service-card,
+.form-control {
+    transition: var(--transition-base);
+}
+
+.btn { will-change: transform; }
+
+@media (hover: hover) {
+    .btn:hover,
+    .card:not(.no-lift):hover,
+    .stat-card:hover,
+    .stat-card-figma:hover {
+        transform: translateY(var(--lift-y));
+        box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 14px 26px -12px rgba(21, 128, 61, 0.65);
+    }
+
+    .menu-item:hover { transform: translateX(3px); }
+}
+
+.btn:active,
+.service-card:active,
+a.card:active,
+a.stat-card:active,
+.card.is-clickable:active {
+    transform: scale(var(--press-scale));
+    box-shadow: none;
+}
+
+.btn[disabled],
+.btn.is-disabled {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--glow-ring);
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.file-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.span-full { grid-column: 1 / -1; }
+.table-container tbody tr { transition: background-color var(--dur) var(--ease); }
+
+
+/* 5. ALERT & BADGE ------------------------------------------------------- */
+.alert-success,
+.alert-error,
+.alert-danger,
+.alert-warning,
+.alert-info {
+    animation: popIn 0.5s var(--ease-spring) both;
+    transform-origin: top center;
+}
+
+.badge {
+    animation: popIn 0.45s var(--ease-spring) 0.1s both;
+}
+
+
+/* 6. STEPPER STATUS TRACKING --------------------------------------------- */
+.stepper-wrapper {
+    --steps: 5;
+    --current: 0;
+    --dot: 42px;
+    --track: 3px;
+}
+
+.stepper-wrapper::before,
+.stepper-wrapper::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--dot) / 2 - var(--track) / 2);
+    left: calc(100% / (var(--steps) * 2));
+    height: var(--track);
+    border-radius: 999px;
+    z-index: 1;
+}
+
+.stepper-wrapper::before {
+    right: calc(100% / (var(--steps) * 2));
+    background-color: var(--border-color);
+}
+
+.stepper-wrapper::after {
+    width: calc((100% - 100% / var(--steps)) * var(--current) / (var(--steps) - 1));
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform-origin: left center;
+    animation: fillLineX 1s var(--ease) 0.15s both;
+}
+
+.step-counter {
+    width: var(--dot);
+    height: var(--dot);
+    transition: var(--transition-base);
+}
+
+.step-name { transition: color var(--dur) var(--ease); }
+
+.step-item.completed .step-counter {
+    animation: popIn 0.5s var(--ease-spring) both;
+}
+
+.step-item:nth-child(1) .step-counter { animation-delay: 0.10s; }
+.step-item:nth-child(2) .step-counter { animation-delay: 0.30s; }
+.step-item:nth-child(3) .step-counter { animation-delay: 0.50s; }
+.step-item:nth-child(4) .step-counter { animation-delay: 0.70s; }
+.step-item:nth-child(5) .step-counter { animation-delay: 0.90s; }
+
+.step-item.active .step-counter {
+    animation: stepPulse 2s ease-out 0.9s infinite;
+    box-shadow: 0 0 14px 2px rgba(34, 197, 94, 0.35);
+}
+
+.step-item.active .step-name {
+    font-weight: 700;
+}
+
+
+/* 7. DOWNLOAD BOX -------------------------------------------------------- */
+.download-card {
+    animation: slideUpFade 0.55s var(--ease) 0.25s both;
+    transition: var(--transition-base);
+}
+
+@media (hover: hover) {
+    .download-card:hover {
+        border-color: var(--secondary);
+        box-shadow: var(--shadow-glow);
+    }
+
+    .download-card .btn:hover i,
+    .download-card .btn:hover svg {
+        animation: nudgeDown 0.6s var(--ease);
+    }
+}
+
+.rejection-box { animation: popIn 0.5s var(--ease-spring) both; }
+
+
+/* 8. SERVICE CARD & UPLOAD BOX ------------------------------------------- */
+.service-card { position: relative; }
+
+@media (hover: hover) {
+    .service-card:hover {
+        border-color: var(--secondary);
+        box-shadow: var(--shadow-glow);
+        transform: translateY(var(--lift-y));
+    }
+}
+
+.service-card:focus-within {
+    border-color: var(--secondary);
+    box-shadow: var(--shadow-glow);
+}
+
+.service-card.active {
+    border-color: var(--primary);
+    animation: selectGlow 0.6s var(--ease) both;
+}
+
+.service-card.active::after {
+    content: '\2713';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+    animation: popIn 0.4s var(--ease-spring) both;
+}
+
+.form-control.upload-box {
+    padding: 18px;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    background-color: var(--surface);
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.form-control.upload-box::file-selector-button {
+    margin-right: 14px;
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 8px;
+    background-color: var(--primary);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.form-control.upload-box:hover,
+.form-control.upload-box:focus-visible,
+.form-control.upload-box.is-dragover {
+    border-color: var(--secondary);
+    background-color: #F7FDF9;
+    box-shadow: var(--shadow-glow);
+}
+
+.form-control.upload-box:hover::file-selector-button {
+    background-color: var(--primary-hover);
+}
+
+.form-control.upload-box.is-dragover { transform: scale(1.01); }
+
+.form-control.upload-box.has-file {
+    border-style: solid;
+    border-color: var(--primary);
+    background-color: var(--light-accent);
+    color: var(--text-dark);
+}
+
+
+/* 9. MODAL DIALOG (FIXED CENTER FULLSCREEN) ------------------------------ */
+.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    z-index: 9999 !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(15, 23, 42, 0.75) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    box-sizing: border-box !important;
+    animation: fadeIn 0.3s var(--ease) both;
+}
+
+.modal-overlay[style*="display: flex"],
+.modal-overlay[style*="display:flex"],
+.modal-overlay.is-open {
+    display: flex !important;
+}
+
+.modal-dialog {
+    position: relative !important;
+    margin: auto !important;
+    width: 100% !important;
+    max-width: 680px !important;
+    max-height: calc(100vh - 40px) !important;
+    max-height: calc(100dvh - 40px) !important;
+    overflow-y: auto;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    box-sizing: border-box !important;
+    animation: slideUpFade 0.4s var(--ease) both;
+}
+
+.modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.modal-close {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.modal-close:hover { background: rgba(255, 255, 255, 0.25); transform: rotate(90deg); }
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-dialog iframe,
+.modal-dialog video {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    border: none;
+    border-radius: 10px;
+}
+
+
+/* 10. TABLE RESPONSIVE & TEKS FIT (MENCEGAH TEKS KEPOTONG) --------------- */
+.table-responsive {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #C5D1C9 transparent;
+}
+
+.table-responsive::-webkit-scrollbar { height: 6px; }
+.table-responsive::-webkit-scrollbar-track { background: transparent; }
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #C5D1C9;
+    border-radius: 999px;
+}
+
+.table-responsive table,
+.table-container {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-responsive th,
+.table-responsive td,
+.table-container th,
+.table-container td {
+    white-space: nowrap;
+    padding: 12px 14px;
+}
+
+
+/* 11. NAVIGASI MOBILE (HAMBURGER Z-INDEX FIX) ---------------------------- */
+.nav-toggle {
+    display: none;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text-dark);
+    cursor: pointer;
+    position: relative;
+    z-index: 105;
+    transition: var(--transition-base);
+}
+
+.nav-toggle:active { transform: scale(var(--press-scale)); }
+
+.sidebar-backdrop { display: none; }
+
+
+/* 12. AUTH PAGE STYLING (BERKAS SMKN 5 SURAKARTA BRANDING) --------------- */
+.auth-card {
+    display: flex;
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.auth-banner {
+    flex: 1;
+    background: 
+        linear-gradient(
+            135deg, 
+            rgba(21, 128, 61, 0.55) 0%, 
+            rgba(15, 81, 41, 0.75) 100%
+        ),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px),
+        url('../img/smk5hd.jpg') center center / cover no-repeat !important;
+    background-size: cover, 20px 20px, cover !important;
+    padding: 40px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-banner::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.auth-banner h1,
+.auth-banner h2,
+.auth-banner p,
+.banner-brand,
+.feature-item,
+.banner-footer {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.banner-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.banner-logo {
+    width: 44px;
+    height: 44px;
+    background: white;
+    color: #15803D;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.banner-title h1 { font-size: 20px; font-weight: 700; margin: 0; }
+.banner-title p { font-size: 12px; opacity: 0.9; margin: 0; }
+.banner-body h2 { font-size: 22px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+.banner-body p { font-size: 13px; opacity: 0.95; line-height: 1.5; margin-bottom: 24px; }
+.feature-list { display: flex; flex-direction: column; gap: 12px; }
+.feature-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+
+.auth-form-container {
+    flex: 1.2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mobile-brand {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-logo {
+    width: 42px;
+    height: 42px;
+    background: #15803D;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+    flex-shrink: 0;
+}
+
+.mobile-brand-text h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.mobile-brand-text p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 2px 0 0 0;
+}
+
+.auth-header { margin-bottom: 24px; }
+.auth-header h2 { font-size: 22px; font-weight: 700; color: var(--text-dark); }
+.auth-header p { font-size: 13px; color: var(--text-muted); }
+
+.role-switcher {
+    display: flex;
+    background: var(--bg-main);
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.role-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-tab.active {
+    background: var(--surface);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: var(--transition-base);
+}
+
+.btn-submit:hover { background: var(--primary-hover); }
+
+.auth-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+/* ==========================================================================
+   13. BREAKPOINT: DESKTOP  > 1024px
+   ========================================================================== */
+@media (min-width: 1025px) {
+    .content-body {
+        width: 100%;
+        max-width: 1480px;
+        margin-inline: auto;
+    }
+}
+
+
+/* ==========================================================================
+   14. BREAKPOINT: TABLET   768px – 1024px
+   ========================================================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .sidebar { width: 220px; }
+    .main-wrapper { margin-left: 220px; }
+    .navbar { padding: 0 24px; }
+    .content-body { padding: 24px; }
+
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-5-grid,
+    .stats-6-grid { grid-template-columns: repeat(3, 1fr); }
+
+    .charts-grid,
+    .dashboard-grid,
+    .video-tutorial-card { grid-template-columns: 1fr; }
+
+    .quick-actions { flex-wrap: wrap; }
+    .stepper-wrapper { --dot: 38px; }
+    .step-name { font-size: 11.5px; padding: 0 4px; }
+}
+
+
+/* ==========================================================================
+   15. BREAKPOINT: MOBILE   < 768px (COMPACT & RESPONSIVE FIX)
+   ========================================================================== */
+@media (max-width: 767px) {
+    body { overflow-x: hidden; }
+    body.sidebar-open { overflow: hidden; }
+
+    .nav-toggle { display: inline-flex !important; }
+
+    .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 64px;
+        padding: 0 16px;
+        gap: 12px;
+    }
+
+    .sidebar {
+        width: min(84vw, 300px);
+        z-index: 300 !important;
+        transform: translateX(-102%);
+        visibility: hidden;
+        box-shadow: none;
+        transition: transform 0.35s var(--ease), visibility 0s linear 0.35s;
+    }
+
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+        visibility: visible;
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25);
+        transition-delay: 0s;
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 250 !important;
+        background: rgba(23, 43, 28, 0.4);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--dur) var(--ease);
+    }
+
+    body.sidebar-open .sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.auth-page .sidebar-backdrop { display: none; }
+
+    .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .navbar-title {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 16px;
+    }
+
+    .content-body { padding: 16px; }
+    .card { padding: 16px; margin-bottom: 16px; width: 100%; box-sizing: border-box; }
+
+    .menu-item:hover { transform: none; }
+
+    .stats-grid,
+    .stats-5-grid,
+    .stats-6-grid,
+    .detail-grid,
+    .details-grid,
+    .service-options,
+    .charts-grid,
+    .dashboard-grid,
+    .profile-info-grid,
+    .video-tutorial-card,
+    .auth-card {
+        grid-template-columns: 1fr;
+    }
+
+    /* === REVISI UTAMA SPACING FORM COMPACT HP === */
+    .auth-form-container { 
+        padding: 16px 14px !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        gap: 10px !important;
+    }
+
+    .form-group {
+        margin-top: 8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .form-control, 
+    select.form-control, 
+    input, 
+    select {
+        height: 38px !important;
+        font-size: 12.5px !important;
+        padding: 0 10px !important;
+    }
+
+    label {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .auth-header h2 {
+        font-size: 19px !important;
+    }
+
+    .auth-header {
+        margin-bottom: 14px !important;
+    }
+
+    .subtitle {
+        margin-bottom: 12px !important;
+        font-size: 12px !important;
+    }
+    /* =========================================== */
+
+    .content-body [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .content-body [style*="grid-column: span 2"],
+    .span-full {
+        grid-column: 1 / -1 !important;
+    }
+
+    .card-head,
+    .header-card,
+    .quick-actions,
+    .file-row,
+    .form-actions,
+    .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .form-actions { flex-direction: column-reverse; }
+    .modal-actions { flex-direction: column-reverse; }
+
+    .card-head > .btn,
+    .header-card .btn,
+    .quick-actions .btn,
+    .quick-actions .btn-quick,
+    .file-row .btn,
+    .form-actions .btn,
+    .modal-actions .btn,
+    .download-card .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-responsive > table { min-width: 640px; }
+
+    .stepper-wrapper {
+        --dot: 34px;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 14px;
+        margin: 20px 0 24px;
+    }
+
+    .stepper-wrapper::before,
+    .stepper-wrapper::after {
+        top: calc(var(--dot) / 2);
+        left: calc(var(--dot) / 2 - var(--track) / 2);
+        right: auto;
+        width: var(--track);
+    }
+
+    .stepper-wrapper::before { height: calc(100% - var(--dot)); }
+
+    .stepper-wrapper::after {
+        height: calc((100% - var(--dot)) * var(--current) / (var(--steps) - 1));
+        background: linear-gradient(180deg, var(--primary), var(--secondary));
+        transform-origin: center top;
+        animation-name: fillLineY;
+    }
+
+    .step-item {
+        flex: none;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .step-counter {
+        flex: none;
+        margin-bottom: 0;
+        font-size: 13px;
+    }
+
+    .step-name {
+        font-size: 13px;
+        text-align: left;
+    }
+
+    .step-item:not(.completed):not(.active) .step-name { opacity: 0.7; }
+
+    .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    .modal-dialog {
+        max-width: none !important;
+        max-height: 92vh !important;
+        max-height: 92dvh !important;
+        padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+        border-radius: 18px 18px 0 0 !important;
+        animation-name: sheetUp !important;
+    }
+
+    .form-control.upload-box { padding: 14px; }
+    .service-card { padding: 16px; }
+    .service-card.active::after { top: 10px; right: 10px; }
+
+    .auth-card {
+        flex-direction: column;
+        margin: 10px auto;
+    }
+
+    .auth-banner { display: none !important; }
+    .mobile-brand { display: flex !important; }
+}
+
+@media (max-width: 599px) {
+    .user-info { display: none; }
+}
+
+
+/* 16. REDUCED MOTION ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
